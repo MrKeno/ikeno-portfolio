@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iKeno | Video Editor & Creative</title>
+    <style>
+        /* --- CORE VARIABLES & RESET --- */
+        :root {
+            --bg: #050505; /* Ultra dark grey, almost black */
+            --card-bg: #111111;
+            --text-main: #ffffff;
+            --text-muted: #a3a3a3;
+            --accent: #ff2a2a; /* Bright Neon Red */
+            --accent-glow: rgba(255, 42, 42, 0.4);
+        }
+        
+        * { box-sizing: border-box; }
+        
+        body { 
+            margin: 0; 
+            font-family: 'Inter', system-ui, -apple-system, sans-serif; 
+            background: var(--bg); 
+            color: var(--text-main); 
+            overflow-x: hidden; /* Prevent scrollbar shift during anims */
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes glitch {
+            0% { text-shadow: 2px 2px var(--accent), -2px -2px blue; }
+            25% { text-shadow: -2px 2px var(--accent), 2px -2px blue; }
+            50% { text-shadow: 2px -2px var(--accent), -2px 2px blue; }
+            75% { text-shadow: -2px -2px var(--accent), 2px 2px blue; }
+            100% { text-shadow: 2px 2px var(--accent), -2px -2px blue; }
+        }
+
+        .animate-load {
+            animation: fadeIn 0.8s ease-out forwards;
+            opacity: 0;
+        }
+        .delay-1 { animation-delay: 0.2s; }
+        .delay-2 { animation-delay: 0.4s; }
+        .delay-3 { animation-delay: 0.6s; }
+
+        /* --- LAYOUT --- */
+        .container { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+        
+        /* --- HERO SECTION --- */
+        header { 
+            height: 90vh; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: flex-start;
+            border-bottom: 1px solid #222;
+        }
+
+        h1 { 
+            font-size: 5rem; 
+            line-height: 0.9;
+            margin: 0; 
+            text-transform: uppercase; 
+            letter-spacing: -2px;
+        }
+
+        h1 span { color: var(--accent); }
+
+        .glitch-hover:hover {
+            animation: glitch 0.3s infinite;
+            cursor: default;
+        }
+
+        .subtitle { 
+            font-size: 1.5rem; 
+            color: var(--text-muted); 
+            margin-top: 1rem;
+            max-width: 600px;
+        }
+
+        .cta-btn {
+            margin-top: 2rem;
+            padding: 1rem 2.5rem;
+            background: transparent;
+            border: 2px solid var(--accent);
+            color: var(--accent);
+            font-weight: bold;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: 0.3s all ease;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-btn:hover {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        /* --- PORTFOLIO GRID --- */
+        .section-title {
+            font-size: 2rem;
+            text-transform: uppercase;
+            margin-top: 4rem;
+            margin-bottom: 2rem;
+            border-left: 5px solid var(--accent);
+            padding-left: 15px;
+        }
+
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
+            gap: 2rem; 
+        }
+
+        .card { 
+            background: var(--card-bg); 
+            border: 1px solid #222; 
+            transition: transform 0.3s ease, border-color 0.3s;
+            position: relative;
+            group: 
+        }
+
+        .card:hover { 
+            transform: scale(1.02); 
+            border-color: var(--accent);
+            z-index: 10;
+        }
+
+        /* Aspect ratio box for video thumbnails */
+        .video-thumbnail {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: #222;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .video-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+
+        .card:hover .video-thumbnail img { opacity: 1; }
+
+        /* Play Button Overlay */
+        .play-icon {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px; height: 50px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: 0.3s;
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+        
+        .play-icon::before {
+            content: '';
+            border-style: solid;
+            border-width: 8px 0 8px 14px;
+            border-color: transparent transparent transparent white;
+            margin-left: 4px; /* Optical adjustment */
+        }
+
+        .card:hover .play-icon { opacity: 1; }
+
+        .card-info { padding: 1.5rem; }
+        .card-info h3 { margin: 0 0 0.5rem 0; font-size: 1.25rem; }
+        .card-info p { color: var(--text-muted); font-size: 0.9rem; margin: 0; }
+
+        /* --- CONTACT / FOOTER --- */
+        footer {
+            margin-top: 6rem;
+            padding: 4rem 0;
+            text-align: center;
+            border-top: 1px solid #222;
+        }
+        
+        .socials a {
+            color: white;
+            margin: 0 10px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            transition: color 0.2s;
+        }
+        .socials a:hover { color: var(--accent); }
+
+        /* Mobile tweaks */
+        @media (max-width: 768px) {
+            h1 { font-size: 3.5rem; }
+            header { height: auto; padding: 6rem 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <!-- Hero Section -->
+    <header>
+        <div class="animate-load">
+            <p style="color: var(--accent); font-weight: bold; letter-spacing: 2px; margin-bottom: 10px;">HELLO, I AM</p>
+            <h1 class="glitch-hover">iKeno<span>.</span></h1>
+            <h1 style="color: transparent; -webkit-text-stroke: 1px white; opacity: 0.5;">Editor</h1>
+        </div>
+        
+        <p class="subtitle animate-load delay-1">
+            Visual Storyteller. Video Editor. Content Creator.<br>
+            I turn raw footage into compelling masterpieces.
+        </p>
+        
+        <a href="#work" class="cta-btn animate-load delay-2">See My Work</a>
+    </header>
+
+    <!-- Portfolio Section -->
+    <div id="work">
+        <h2 class="section-title animate-load delay-3">Selected Projects</h2>
+        
+        <div class="grid animate-load delay-3">
+            
+            <!-- Project 1 -->
+            <a href="#" class="card" style="text-decoration: none; color: inherit;">
+                <div class="video-thumbnail">
+                    <!-- Replace with your actual thumbnail image URL -->
+                    <img src="https://images.unsplash.com/photo-1574717024653-61fd2cf4d44c?q=80&w=800&auto=format&fit=crop" alt="Gaming Montage">
+                    <div class="play-icon"></div>
+                </div>
+                <div class="card-info">
+                    <h3>High-Paced Gaming Montage</h3>
+                    <p>VFX, Sound Design, Color Grading</p>
+                </div>
+            </a>
+
+            <!-- Project 2 -->
+            <a href="#" class="card" style="text-decoration: none; color: inherit;">
+                <div class="video-thumbnail">
+                    <img src="https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=800&auto=format&fit=crop" alt="Travel Vlog">
+                    <div class="play-icon"></div>
+                </div>
+                <div class="card-info">
+                    <h3>Cinematic Travel Vlog</h3>
+                    <p>Storytelling, Transition Flow, 4K Editing</p>
+                </div>
+            </a>
+
+            <!-- Project 3 -->
+            <a href="#" class="card" style="text-decoration: none; color: inherit;">
+                <div class="video-thumbnail">
+                    <img src="https://images.unsplash.com/photo-1536240478700-b869070f9279?q=80&w=800&auto=format&fit=crop" alt="Commercial">
+                    <div class="play-icon"></div>
+                </div>
+                <div class="card-info">
+                    <h3>Brand Commercial</h3>
+                    <p>Motion Graphics, Kinetic Typography</p>
+                </div>
+            </a>
+
+        </div>
+    </div>
+
+    <!-- Contact Footer -->
+    <footer class="animate-load delay-3">
+        <h2>Let's Create Together</h2>
+        <p style="color: var(--text-muted); margin-bottom: 2rem;">Ready to take your content to the next level?</p>
+        <a href="mailto:ikeno@example.com" class="cta-btn">Email Me</a>
+        
+        <div class="socials" style="margin-top: 3rem;">
+            <a href="#">YouTube</a>
+            <a href="#">Instagram</a>
+            <a href="#">Twitter/X</a>
+        </div>
+        <p style="margin-top: 3rem; font-size: 0.8rem; color: #444;">© 2024 iKeno. All Rights Reserved.</p>
+    </footer>
+
+</div>
+
+</body>
+</html>
